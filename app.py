@@ -1,32 +1,85 @@
 import avango
 import avango.script
 import avango.gua
+import sys
 
 from compression.compression_configurator import CompressionConfigurator 
 from compression.compression_text import CompressionText
 from input.timed_rotate import TimedRotate
 
+SPOINTS_CONFIG = ""
+VIDEO3D_CONFIG = ""
 COMPRESSION_CONFIGURATOR = None
 DEBUG_TEXT = CompressionText()
 
-def setup_scene(graph, kinect_config):
-    ''' helper function to setup scene graph '''
+def _setup_spoints(SPOINTS_PARENT):
+    ''' helper function for setup_scene 
+        to add spoints components to scene. '''
+    global SPOINTS_CONFIG
     global COMPRESSION_CONFIGURATOR
-
+    
     spointsloader = avango.gua.nodes.SPointsLoader()
-    spoints_geode = spointsloader.load("kinect", kinect_config)
+    spoints_geode = spointsloader.load("kinect-spoints", SPOINTS_CONFIG)
 
     COMPRESSION_CONFIGURATOR = CompressionConfigurator()
-    COMPRESSION_CONFIGURATOR.Keyboard.set_device_number(1)
+    #COMPRESSION_CONFIGURATOR.Keyboard.set_device_number(1)
+    COMPRESSION_CONFIGURATOR.Keyboard.set_device_number(0)
     COMPRESSION_CONFIGURATOR.set_spoints_geode(spoints_geode)
     COMPRESSION_CONFIGURATOR.verbose = False
     print(COMPRESSION_CONFIGURATOR.get_usage_hint())
 
-    timer = avango.nodes.TimeSensor()
-    rotation_updater = TimedRotate()
-    rotation_updater.TimeIn.connect_from(timer.Time)
-    transform1 = avango.gua.nodes.TransformNode(Children=[spoints_geode])
-    transform1.Transform.connect_from(rotation_updater.MatrixOut)
+    spoints_transform = avango.gua.nodes.TransformNode(
+        Name="spoints-transform",
+        Children=[spoints_geode]
+    )
+    spoints_transform.Transform.value = \
+        avango.gua.make_trans_mat(0.75, -1.0, -2.0) * \
+        avango.gua.make_rot_mat(180, 0.0, 1.0, 0.0)
+
+    DEBUG_TEXT.my_constructor(
+        CONFIGURATOR=COMPRESSION_CONFIGURATOR,
+        PARENT_NODE=SPOINTS_PARENT,
+        SCALE=0.03
+    )
+    DEBUG_TEXT.node.Transform.value = avango.gua.make_trans_mat(0,0.7,0)
+
+    SPOINTS_PARENT.Children.value.append(spoints_transform)
+
+def _setup_video3d(VIDEO3D_PARENT):
+    ''' helper function for setup_scene 
+        to add video3d components to scene. '''
+    global VIDEO3D_CONFIG
+
+    videoloader = avango.gua.nodes.Video3DLoader()
+    video_geode = videoloader.load("kinect-video3d", VIDEO3D_CONFIG)
+
+    
+    video_transform = avango.gua.nodes.TransformNode(
+        Name="video3d-transform",
+        Children=[video_geode]
+    )
+    video_transform.Transform.value = \
+        avango.gua.make_trans_mat(-0.75, -1.0, -2.0) * \
+        avango.gua.make_rot_mat(180, 0.0, 1.0, 0.0)
+    
+    VIDEO3D_PARENT.Children.value.append(video_transform)
+
+def setup_scene(graph):
+    ''' helper function to setup scene graph '''
+    global SPOINTS_CONFIG
+    global VIDEO3D_CONFIG
+
+    if len(SPOINTS_CONFIG) == 0:
+        print("Failure: please initialize app.SPOINTS_CONFIG.")
+        print("  > Exiting.")
+        sys.exit()
+    if len(VIDEO3D_CONFIG) == 0:
+        print("Failure: please initialize app.SPOINTS_CONFIG.")
+        print("  > Exiting.")
+        sys.exit() 
+
+    _setup_video3d(graph.Root.value)
+    _setup_spoints(graph.Root.value)
 
     light = avango.gua.nodes.LightNode(
         Type=avango.gua.LightType.POINT,
@@ -36,14 +89,7 @@ def setup_scene(graph, kinect_config):
         Transform=(avango.gua.make_trans_mat(1, 1, 5) *
                    avango.gua.make_scale_mat(30, 30, 30)))
 
-    DEBUG_TEXT.my_constructor(
-        CONFIGURATOR=COMPRESSION_CONFIGURATOR,
-        PARENT_NODE=graph.Root.value,
-        SCALE=0.03
-    )
-    DEBUG_TEXT.node.Transform.value = avango.gua.make_trans_mat(0,0.7,0)
-
-    graph.Root.value.Children.value.append(transform1)
+    
     graph.Root.value.Children.value.append(light)
 
 def setup_pipeline():
@@ -68,6 +114,7 @@ def setup_pipeline():
             avango.gua.nodes.TriMeshPassDescription(),
             avango.gua.nodes.LightVisibilityPassDescription(),
             avango.gua.nodes.SPointsPassDescription(),
+            avango.gua.nodes.Video3DPassDescription(),
             res_pass,
             anti_aliasing,
         ])
