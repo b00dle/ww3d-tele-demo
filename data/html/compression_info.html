@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+
+</head>
+<style type="text/css">
+  /*
+  body {
+    background: rgba(256, 256, 256, 256);
+    margin: 10;
+    overflow: hidden;
+  }
+  */
+  /*
+  #bg {
+    position: relative;
+    color: black;
+    background: rgba(255, 255, 255, 0.5);
+    font-family: sans-serif;
+    width: 150px;
+    height: 55px;
+    float: right;
+    border-radius: 0 0 0 5px;
+    padding: 15px 10px 5px 10px;
+    text-align: right;
+  }
+  */
+  #grid, #point, #color {
+    width: 320px;
+    height: 60px;
+    padding: 10px;
+    border: 5px solid gray;
+    margin: 0;
+    text-align: center;
+    font-size: 150%;
+  }
+  #grid_x, #grid_y, #grid_z, #point_x, #point_y, #point_z, #color_x, #color_y, #color_z {
+    display: inline;
+  }
+</style>
+
+<script type="text/javascript">
+function set_grid_dim(x,y,z) {
+  div_x = document.getElementById('grid_x');
+  div_x.innerText = x;
+  div_y = document.getElementById('grid_y');
+  div_y.innerText = y;
+  div_z = document.getElementById('grid_z');
+  div_z.innerText = z;
+}
+
+function set_point_prec(x,y,z) {
+  div_x = document.getElementById('point_x');
+  div_x.innerText = x;
+  div_y = document.getElementById('point_y');
+  div_y.innerText = y;
+  div_z = document.getElementById('point_z');
+  div_z.innerText = z;
+}
+
+function set_color_prec(x,y,z) {
+  div_x = document.getElementById('color_x');
+  div_x.innerText = x;
+  div_y = document.getElementById('color_y');
+  div_y.innerText = y;
+  div_z = document.getElementById('color_z');
+  div_z.innerText = z;
+}
+</script>
+
+<body>
+  <div id="grid">
+    Grid Dimensions [<div id="grid_x"></div>, <div id="grid_y"></div>, <div id="grid_z"></div>]
+  </div>
+  <div id="point">
+    Point Precision [<div id="point_x"></div>, <div id="point_y"></div>, <div id="point_z"></div>] 
+  </div>
+  <div id="color">
+    Color Precision [<div id="color_x"></div>, <div id="color_y"></div>, <div id="color_z"></div>]
+  </div>
+</body>
+
+</html>

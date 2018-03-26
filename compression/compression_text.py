@@ -36,3 +36,9 @@ class CompressionText(Text):
                 continue
             dt_str += "".join(str(value).split()) + " "
         self.set_text(dt_str)
+
+    def connect(self):
+        self.UpdateText.connect_from(self.configurator.Updated)
+
+    def disconnect(self):
+        self.UpdateText.disconnect_from(self.configurator.Updated)

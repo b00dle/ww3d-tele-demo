@@ -1,17 +1,42 @@
 import avango
 import avango.script
 import avango.gua
+import avango.gua.gui
 import sys
 
 from compression.compression_configurator import CompressionConfigurator 
 from compression.compression_text import CompressionText
+from compression.compression_gui import CompressionGui
+
 from input.timed_rotate import TimedRotate
 
 SPOINTS_CONFIG = ""
 VIDEO3D_CONFIG = ""
 COMPRESSION_CONFIGURATOR = None
-DEBUG_TEXT = CompressionText()
+COMPRESSION_GUI = CompressionGui()
 
+def _apply_gui_hack(GUI_PARENT):
+    ''' helper for setup_gui. 
+        if hack isn't applied gui setup somehow crashes app. '''
+    global COMPRESSION_CONFIGURATOR
+    hack = CompressionText()
+    hack.my_constructor(
+        CONFIGURATOR=COMPRESSION_CONFIGURATOR,
+        PARENT_NODE=GUI_PARENT,
+        SCALE=0.03
+    )
+    hack.node.Transform.value = avango.gua.make_trans_mat(0,0.7,0)
+    hack.disconnect()
+    hack.node.Tags.value = ['invisible']
+
+def _setup_gui(GUI_PARENT):
+    ''' helper function for setup_scene 
+        to add gui components to scene. '''
+    global COMPRESSION_CONFIGURATOR
+    global COMPRESSION_GUI
+    _apply_gui_hack(GUI_PARENT)
+    COMPRESSION_GUI.my_constructor(COMPRESSION_CONFIGURATOR, GUI_PARENT)
+    
 def _setup_spoints(SPOINTS_PARENT):
     ''' helper function for setup_scene 
         to add spoints components to scene. '''
@@ -35,14 +60,7 @@ def _setup_spoints(SPOINTS_PARENT):
     spoints_transform.Transform.value = \
         avango.gua.make_trans_mat(0.75, -1.0, -2.0) * \
         avango.gua.make_rot_mat(180, 0.0, 1.0, 0.0)
-
-    DEBUG_TEXT.my_constructor(
-        CONFIGURATOR=COMPRESSION_CONFIGURATOR,
-        PARENT_NODE=SPOINTS_PARENT,
-        SCALE=0.03
-    )
-    DEBUG_TEXT.node.Transform.value = avango.gua.make_trans_mat(0,0.7,0)
-
+    
     SPOINTS_PARENT.Children.value.append(spoints_transform)
 
 def _setup_video3d(VIDEO3D_PARENT):
@@ -78,8 +96,9 @@ def setup_scene(graph):
         print("  > Exiting.")
         sys.exit() 
 
-    _setup_video3d(graph.Root.value)
+    #_setup_video3d(graph.Root.value)
     _setup_spoints(graph.Root.value)
+    _setup_gui(graph.Root.value)
 
     light = avango.gua.nodes.LightNode(
         Type=avango.gua.LightType.POINT,
@@ -116,6 +135,7 @@ def setup_pipeline():
             avango.gua.nodes.SPointsPassDescription(),
             avango.gua.nodes.Video3DPassDescription(),
             res_pass,
+            avango.gua.nodes.TexturedScreenSpaceQuadPassDescription(),
             anti_aliasing,
         ])
     return pipeline_description
@@ -128,6 +148,7 @@ def setup_screen(window):
         Resolution=window.Size.value,
         OutputWindowName="window",
         Transform=avango.gua.make_trans_mat(0.0, 0.0, 3.5))
+    cam.BlackList.value = ["invisible"]
 
     cam.PipelineDescription.value = setup_pipeline()
 
