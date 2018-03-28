@@ -43,6 +43,14 @@
   #grid_x, #grid_y, #grid_z, #point_x, #point_y, #point_z, #color_x, #color_y, #color_z {
     display: inline;
   }
+  .data-table {
+    width: 320px;
+  }
+
+  .data-table-row-odd {
+    background: #F2F2F2;
+    border-top: 1px solid black;
+  }
 </style>
 
 <script type="text/javascript">
@@ -72,6 +80,61 @@ function set_color_prec(x,y,z) {
   div_z = document.getElementById('color_z');
   div_z.innerText = z;
 }
+
+function update_table_container(data) {
+  // get the tables parent container
+  var container = document.querySelector("#table-container");
+  var fc = container.firstChild;
+  while( fc ) {
+      container.removeChild( fc );
+      fc = container.firstChild;
+  }
+  // create table and append
+  var json_data = JSON.parse(data)
+  var table = create_table_from_data(json_data);
+  container.appendChild(table);
+}
+
+/**
+ * returns a dom table
+ * @param data json-data
+ */
+function create_table_from_data(data) {
+  var table = document.createElement("table")
+  table.classList.add("data-table");
+  
+  counter = 1;
+  for(var key in data) {
+    // make row
+    var tr = document.createElement("tr");
+    if(counter % 2 == 1) {
+      tr.classList.add("data-table-row-odd");      
+    } else {
+      tr.classList.add("data-table-row-even");      
+    }
+    tr.classList.add("border-top");
+    ++counter;
+    
+    // first col
+    var c1 = document.createElement("td");
+    c1.classList.add("col");
+    c1.innerHTML = key.replace("_", " ") + ":";
+    
+    // second col
+    var c2 = document.createElement("td");
+    c2.classList.add("col");
+    c2.innerHTML = data[key];
+    
+    // add to elements
+    tr.appendChild(c1);
+    tr.appendChild(c2);
+    
+    table.appendChild(tr);
+  }
+  
+  return table;
+}
+
 </script>
 
 <body>
@@ -84,6 +147,7 @@ function set_color_prec(x,y,z) {
   <div id="color">
     Color Precision [<div id="color_x"></div>, <div id="color_y"></div>, <div id="color_z"></div>]
   </div>
+  <div id="table-container"></div>
 </body>
 
 </html>
