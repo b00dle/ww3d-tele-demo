@@ -97,7 +97,7 @@ def setup_scene(graph):
         print("  > Exiting.")
         sys.exit() 
 
-    _setup_video3d(graph.Root.value)
+    #_setup_video3d(graph.Root.value)
     _setup_spoints(graph.Root.value)
     _setup_gui(graph.Root.value)
 

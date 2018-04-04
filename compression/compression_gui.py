@@ -49,6 +49,8 @@ class CompressionGui(avango.script.Script):
                 self.gui_resource.call_javascript("set_point_prec", [str(v) for v in value])
             elif key == "color_precision":
                 self.gui_resource.call_javascript("set_color_prec", [str(v) for v in value])
+            elif key == "point_size":
+                self.gui_resource.call_javascript("set_point_size", [str(value)])
             else:
                 continue
 

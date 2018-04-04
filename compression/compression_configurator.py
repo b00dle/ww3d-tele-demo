@@ -1,5 +1,6 @@
 import avango
 import avango.script
+import copy
 
 from avango.script import field_has_changed
 
@@ -30,7 +31,8 @@ class CompressionConfigurator(avango.script.Script):
         self._settings = {
             "point_precision" : [4,4,4],
             "color_precision" : [4,4,4],
-            "grid_dimension" : [2,2,2]
+            "grid_dimension" : [2,2,2],
+            "point_size" : 1
         }
 
         # flipped to true whenever the spoints nodes
@@ -45,6 +47,8 @@ class CompressionConfigurator(avango.script.Script):
         self._have_increased_points = False
         self._have_reduced_color = False
         self._have_increased_color = False
+        self._have_reduced_point_size = False
+        self._have_increased_point_size = False
         
         self.always_evaluate(True)
 
@@ -60,13 +64,16 @@ class CompressionConfigurator(avango.script.Script):
 - Press Left or Right 
   - (uniformly) reduce or increase compression grid dimensions
   - [min, max] = [1, 16]
+- Press O or P 
+  - reduce or increase screen space point size
+  - [min, max] = [1, 10]
 ##############################################################
         """
 
     def get_settings(self):
         ''' returns a copy of the current settings applied to node. '''
         return {
-            key : [v for v in value]
+            key : copy.deepcopy(value)
             for key, value in self._settings.items()
         }
         
@@ -105,11 +112,22 @@ class CompressionConfigurator(avango.script.Script):
         if max(self._settings["grid_dimension"]) < 16:
             self._settings["grid_dimension"] = [g+1 for g in self._settings["grid_dimension"]]
             self.update_spoints_geode()
+
+    def reduce_point_size(self):
+        if self._settings["point_size"] > 1:
+            self._settings["point_size"] = self._settings["point_size"] - 1
+            self.update_spoints_geode()
+
+    def increase_point_size(self):
+        if self._settings["point_size"] < 10:
+            self._settings["point_size"] = self._settings["point_size"] + 1
+            self.update_spoints_geode()
     
     def update_spoints_geode(self):
         cg.set_grid_dimensions(self.spoints_geode, self._settings["grid_dimension"]) 
         cg.set_point_precision(self.spoints_geode, self._settings["point_precision"])
         cg.set_color_precision(self.spoints_geode, self._settings["color_precision"])
+        cg.set_point_size(self.spoints_geode, self._settings["point_size"])
         self.Updated.value = True
         if self.verbose:
             out_str = "\n=====Compression Settings=====\n"
@@ -125,6 +143,7 @@ class CompressionConfigurator(avango.script.Script):
         self._evaluate_point_precision()
         self._evaluate_color_precision()
         self._evaluate_grid_dimensions()
+        self._evaluate_point_size()
     
     def _evaluate_point_precision(self):
         ''' process changes in point precision
@@ -167,3 +186,17 @@ class CompressionConfigurator(avango.script.Script):
             self.increase_grid_dimensions()
         elif not self.Keyboard.KeyRight.value and self._have_increased_grid:
             self._have_increased_grid = False
+
+    def _evaluate_point_size(self):
+        ''' process changes in grid dimensions
+            and update spoints_geode accordingly. '''
+        if self.Keyboard.KeyO.value and not self._have_reduced_point_size:
+            self._have_reduced_point_size = True
+            self.reduce_point_size()
+        elif not self.Keyboard.KeyO.value and self._have_reduced_point_size:
+            self._have_reduced_point_size = False
+        elif self.Keyboard.KeyP.value and not self._have_increased_point_size:
+            self._have_increased_point_size = True
+            self.increase_point_size()
+        elif not self.Keyboard.KeyP.value and self._have_increased_point_size:
+            self._have_increased_point_size = False

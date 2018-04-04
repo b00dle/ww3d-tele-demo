@@ -31,7 +31,7 @@
     text-align: right;
   }
   */
-  #grid, #point, #color {
+  #grid, #point, #color, #point_size {
     width: 320px;
     height: 60px;
     padding: 10px;
@@ -40,7 +40,7 @@
     text-align: center;
     font-size: 150%;
   }
-  #grid_x, #grid_y, #grid_z, #point_x, #point_y, #point_z, #color_x, #color_y, #color_z {
+  #grid_x, #grid_y, #grid_z, #point_x, #point_y, #point_z, #color_x, #color_y, #color_z, #point_size_value {
     display: inline;
   }
   .data-table {
@@ -79,6 +79,11 @@ function set_color_prec(x,y,z) {
   div_y.innerText = y;
   div_z = document.getElementById('color_z');
   div_z.innerText = z;
+}
+
+function set_point_size(v) {
+  div_v = document.getElementById('point_size_value');
+  div_v.innerText = v;
 }
 
 function update_table_container(data) {
@@ -139,13 +144,16 @@ function create_table_from_data(data) {
 
 <body>
   <div id="grid">
-    Grid Dimensions [<div id="grid_x"></div>, <div id="grid_y"></div>, <div id="grid_z"></div>]
+    Grid Dimensions: [<div id="grid_x"></div>, <div id="grid_y"></div>, <div id="grid_z"></div>]
   </div>
   <div id="point">
-    Point Precision [<div id="point_x"></div>, <div id="point_y"></div>, <div id="point_z"></div>] 
+    Point Precision: [<div id="point_x"></div>, <div id="point_y"></div>, <div id="point_z"></div>] 
   </div>
   <div id="color">
-    Color Precision [<div id="color_x"></div>, <div id="color_y"></div>, <div id="color_z"></div>]
+    Color Precision: [<div id="color_x"></div>, <div id="color_y"></div>, <div id="color_z"></div>]
+  </div>
+  <div id="point_size">
+    Point Size: <div id="point_size_value"></div>
   </div>
   <div id="table-container"></div>
 </body>

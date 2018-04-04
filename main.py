@@ -7,12 +7,14 @@ import sys
 from avango.script import field_has_changed
    
 import app
+from viewing.ViewingSetup import StereoViewingSetup
 
 def start():
     # setup scenegraph
     graph = avango.gua.nodes.SceneGraph(Name="scenegraph")
     app.setup_scene(graph)
 
+    '''
     # window and screen setup
     size = avango.gua.Vec2ui(1024, 768)
     window = avango.gua.nodes.GlfwWindow(Size=size, LeftResolution=size)
@@ -28,6 +30,29 @@ def start():
     guaVE.start(locals(), globals())
 
     viewer.run()
+    '''
+
+    print_graph(graph.Root.value)
+
+    size = avango.gua.Vec2ui(1024, 768)
+    viewingSetup = StereoViewingSetup(
+        SCENEGRAPH = graph,
+        WINDOW_RESOLUTION = size,
+        SCREEN_DIMENSIONS = avango.gua.Vec2(1.0, 768/1024),
+        LEFT_SCREEN_RESOLUTION = size,
+        RIGHT_SCREEN_RESOLUTION = size
+    )
+    viewingSetup.run(locals(), globals())
+
+## print the subgraph under a given node to the console
+def print_graph(root_node):
+  stack = [(root_node, 0)]
+  while stack:
+    node, level = stack.pop()
+    print("│   " * level + "├── {0} <{1}>".format(
+      node.Name.value, node.__class__.__name__))
+    stack.extend(
+      [(child, level + 1) for child in reversed(node.Children.value)])
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:

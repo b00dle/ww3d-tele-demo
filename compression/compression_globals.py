@@ -15,3 +15,6 @@ def set_color_precision(spoints_geode, prec):
         spoints_geode.GlobalColorPrecisionX.value = prec[0]
         spoints_geode.GlobalColorPrecisionY.value = prec[1]
         spoints_geode.GlobalColorPrecisionZ.value = prec[2]
+
+def set_point_size(spoints_geode, size):
+    spoints_geode.ScreenSpacePointSize.value = size
