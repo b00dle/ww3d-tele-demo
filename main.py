@@ -32,7 +32,7 @@ def start():
 if __name__ == '__main__':
     if len(sys.argv) < 3:
         app.SPOINTS_CONFIG = "spoints_resource_file.sr"
-        app.VIDEO3D_CONFIG = "/mnt/telepresence/kinect_recordings/christmas2017/surface_23_24_25_26_pan_l.ks"
+        app.VIDEO3D_CONFIG = "surface_23_24_25_26_pan_l.ks"
         print("NOTIFICATION: attempting to set default config for SPOINTS and VIDEO3D.")
         print("  > SPOINTS: " + app.SPOINTS_CONFIG)
         print("  > VIDEO3D: " + app.VIDEO3D_CONFIG)

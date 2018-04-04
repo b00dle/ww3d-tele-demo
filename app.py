@@ -47,8 +47,8 @@ def _setup_spoints(SPOINTS_PARENT):
     spoints_geode = spointsloader.load("kinect-spoints", SPOINTS_CONFIG)
 
     COMPRESSION_CONFIGURATOR = CompressionConfigurator()
-    #COMPRESSION_CONFIGURATOR.Keyboard.set_device_number(1)
-    COMPRESSION_CONFIGURATOR.Keyboard.set_device_number(0)
+    COMPRESSION_CONFIGURATOR.Keyboard.set_device_number(1)
+    #COMPRESSION_CONFIGURATOR.Keyboard.set_device_number(0)
     COMPRESSION_CONFIGURATOR.set_spoints_geode(spoints_geode)
     COMPRESSION_CONFIGURATOR.verbose = False
     print(COMPRESSION_CONFIGURATOR.get_usage_hint())
@@ -86,6 +86,7 @@ def setup_scene(graph):
     ''' helper function to setup scene graph '''
     global SPOINTS_CONFIG
     global VIDEO3D_CONFIG
+    global COMPRESSION_GUI
 
     if len(SPOINTS_CONFIG) == 0:
         print("Failure: please initialize app.SPOINTS_CONFIG.")
@@ -96,9 +97,11 @@ def setup_scene(graph):
         print("  > Exiting.")
         sys.exit() 
 
-    #_setup_video3d(graph.Root.value)
+    _setup_video3d(graph.Root.value)
     _setup_spoints(graph.Root.value)
     _setup_gui(graph.Root.value)
+
+    #COMPRESSION_GUI.hide()
 
     light = avango.gua.nodes.LightNode(
         Type=avango.gua.LightType.POINT,
