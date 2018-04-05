@@ -29,10 +29,10 @@ class CompressionConfigurator(avango.script.Script):
         
         # stores current settings applied to node
         self._settings = {
-            "point_precision" : [4,4,4],
+            "point_precision" : [7,7,7],
             "color_precision" : [4,4,4],
-            "grid_dimension" : [2,2,2],
-            "point_size" : 1
+            "grid_dimension" : [3,3,3],
+            "point_size" : 2
         }
 
         # flipped to true whenever the spoints nodes

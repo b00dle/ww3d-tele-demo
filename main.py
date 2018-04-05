@@ -32,16 +32,125 @@ def start():
     viewer.run()
     '''
 
-    print_graph(graph.Root.value)
+    ## init viewing and interaction setups
+    hostname = open('/etc/hostname', 'r').readline()
+    hostname = hostname.strip(" \n")
 
-    size = avango.gua.Vec2ui(1024, 768)
-    viewingSetup = StereoViewingSetup(
-        SCENEGRAPH = graph,
-        WINDOW_RESOLUTION = size,
-        SCREEN_DIMENSIONS = avango.gua.Vec2(1.0, 768/1024),
-        LEFT_SCREEN_RESOLUTION = size,
-        RIGHT_SCREEN_RESOLUTION = size
-    )
+    print("WORKSTATION:", hostname)
+
+    viewingSetup = None
+
+    if hostname == "orestes": # Mitsubishi 3D-TV workstation
+        _tracking_transmitter_offset = avango.gua.make_trans_mat(-0.98, -(0.58 + 0.975), 0.27 + 3.48) * avango.gua.make_rot_mat(90.0,0,1,0) # transformation into tracking coordinate system 
+
+        viewingSetup = StereoViewingSetup(
+            SCENEGRAPH = graph,
+            WINDOW_RESOLUTION = avango.gua.Vec2ui(1920, 1080),
+            SCREEN_DIMENSIONS = avango.gua.Vec2(1.445, 0.81),
+            LEFT_SCREEN_RESOLUTION = avango.gua.Vec2ui(1920, 1080),
+            RIGHT_SCREEN_RESOLUTION = avango.gua.Vec2ui(1920, 1080),
+            STEREO_FLAG = True,
+            STEREO_MODE = avango.gua.StereoMode.CHECKERBOARD,
+            HEADTRACKING_FLAG = True,
+            HEADTRACKING_STATION = "tracking-glasses-1", # wired 3D-TV glasses on Mitsubishi 3D-TV workstation
+            TRACKING_TRANSMITTER_OFFSET = _tracking_transmitter_offset,
+            )
+
+        '''
+        pointerInput = PointerInput()
+        pointerInput.init_art_pointer(
+            POINTER_DEVICE_STATION = "device-pointer-1", # August pointer
+            POINTER_TRACKING_STATION = "tracking-pointer-1", # August pointer
+            TRACKING_TRANSMITTER_OFFSET = _tracking_transmitter_offset,
+            KEYBOARD_STATION = "gua-device-keyboard",
+        )
+            
+        manipulationManager = ManipulationManager()
+        manipulationManager.my_constructor(
+            SCENEGRAPH = graph,
+            NAVIGATION_NODE = viewingSetup.navigation_node,
+            HEAD_NODE = viewingSetup.head_node,
+            POINTER_INPUT = pointerInput,
+            )
+        '''
+    elif hostname == "athena": # small powerwall workstation
+        _tracking_transmitter_offset = avango.gua.make_trans_mat(0.0,-1.42,1.6) # transformation into tracking coordinate system
+
+        viewingSetup = StereoViewingSetup(
+            SCENEGRAPH = graph,
+            WINDOW_RESOLUTION = avango.gua.Vec2ui(1920*2, 1200),
+            SCREEN_DIMENSIONS = avango.gua.Vec2(3.0, 2.0),
+            LEFT_SCREEN_POSITION = avango.gua.Vec2ui(130, 13),
+            LEFT_SCREEN_RESOLUTION = avango.gua.Vec2ui(1780, 1185),
+            RIGHT_SCREEN_POSITION = avango.gua.Vec2ui(1925, 13),
+            RIGHT_SCREEN_RESOLUTION = avango.gua.Vec2ui(1780, 1185),
+            STEREO_FLAG = True,
+            STEREO_MODE = avango.gua.StereoMode.SIDE_BY_SIDE,
+            HEADTRACKING_FLAG = True,
+            HEADTRACKING_STATION = "tracking-glasses-2", # wired 3D-TV glasses on Samsung 3D-TV workstation
+            TRACKING_TRANSMITTER_OFFSET = _tracking_transmitter_offset,
+            )
+        '''
+        pointerInput = PointerInput()
+        pointerInput.init_art_pointer(
+            POINTER_DEVICE_STATION = "device-pointer-2", # Gyromouse
+            POINTER_TRACKING_STATION = "tracking-pointer-2", # Gyromouse
+            TRACKING_TRANSMITTER_OFFSET = _tracking_transmitter_offset,
+            KEYBOARD_STATION = "gua-device-keyboard",
+        )
+            
+        manipulationManager = ManipulationManager()
+        manipulationManager.my_constructor(
+            SCENEGRAPH = graph,
+            NAVIGATION_NODE = viewingSetup.navigation_node,
+            HEAD_NODE = viewingSetup.head_node,
+            POINTER_INPUT = pointerInput,
+            )
+        '''
+    elif hostname == "artemis": # Samsung 3D-TV workstation
+        _tracking_transmitter_offset = avango.gua.make_trans_mat(0.0, -1.3, 1.45) # transformation into tracking coordinate system 
+
+        viewingSetup = StereoViewingSetup(
+            SCENEGRAPH = graph,
+            WINDOW_RESOLUTION = avango.gua.Vec2ui(1920, 1080),
+            SCREEN_DIMENSIONS = avango.gua.Vec2(1.24, 0.69),
+            LEFT_SCREEN_RESOLUTION = avango.gua.Vec2ui(1920, 1080),
+            RIGHT_SCREEN_RESOLUTION = avango.gua.Vec2ui(1920, 1080),
+            STEREO_FLAG = True,
+            STEREO_MODE = avango.gua.StereoMode.CHECKERBOARD,
+            HEADTRACKING_FLAG = True,
+            HEADTRACKING_STATION = "tracking-glasses-3", # wired 3D-TV glasses on Mitsubishi 3D-TV workstation
+            TRACKING_TRANSMITTER_OFFSET = _tracking_transmitter_offset,
+            )
+        '''
+        pointerInput = PointerInput()
+        pointerInput.init_art_pointer(
+            POINTER_DEVICE_STATION = "device-pointer-3", # 2.4G Mouse
+            POINTER_TRACKING_STATION = "tracking-pointer-3", # 2.4G Mouse
+            TRACKING_TRANSMITTER_OFFSET = _tracking_transmitter_offset,
+            KEYBOARD_STATION = "gua-device-keyboard",
+        )
+            
+        manipulationManager = ManipulationManager()
+        manipulationManager.my_constructor(
+            SCENEGRAPH = graph,
+            NAVIGATION_NODE = viewingSetup.navigation_node,
+            HEAD_NODE = viewingSetup.head_node,
+            POINTER_INPUT = pointerInput,
+            )
+        '''            
+    else:
+        size = avango.gua.Vec2ui(1024, 768)
+        viewingSetup = StereoViewingSetup(
+            SCENEGRAPH = graph,
+            WINDOW_RESOLUTION = size,
+            SCREEN_DIMENSIONS = avango.gua.Vec2(1.0, 768/1024),
+            LEFT_SCREEN_RESOLUTION = size,
+            RIGHT_SCREEN_RESOLUTION = size
+        )
+
+    print("SCENEGRAPH") 
+    print_graph(graph.Root.value)
     viewingSetup.run(locals(), globals())
 
 ## print the subgraph under a given node to the console

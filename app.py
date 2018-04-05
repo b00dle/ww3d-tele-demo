@@ -58,7 +58,7 @@ def _setup_spoints(SPOINTS_PARENT):
         Children=[spoints_geode]
     )
     spoints_transform.Transform.value = \
-        avango.gua.make_trans_mat(0.75, -1.0, -2.0) * \
+        avango.gua.make_trans_mat(1.50, -1.0, -2.0) * \
         avango.gua.make_rot_mat(180, 0.0, 1.0, 0.0)
     
     SPOINTS_PARENT.Children.value.append(spoints_transform)
@@ -77,7 +77,7 @@ def _setup_video3d(VIDEO3D_PARENT):
         Children=[video_geode]
     )
     video_transform.Transform.value = \
-        avango.gua.make_trans_mat(-0.75, -1.0, -2.0) * \
+        avango.gua.make_trans_mat(0.25, -1.0, -2.0) * \
         avango.gua.make_rot_mat(180, 0.0, 1.0, 0.0)
     
     VIDEO3D_PARENT.Children.value.append(video_transform)
@@ -97,7 +97,7 @@ def setup_scene(graph):
         print("  > Exiting.")
         sys.exit() 
 
-    #_setup_video3d(graph.Root.value)
+    _setup_video3d(graph.Root.value)
     _setup_spoints(graph.Root.value)
     _setup_gui(graph.Root.value)
 

@@ -13,7 +13,7 @@ class CompressionGui(avango.script.Script):
     def __init__(self):
         self.super(CompressionGui).__init__()
 
-    def my_constructor(self, CONFIGURATOR, PARENT_NODE, SCALE=1.0):
+    def my_constructor(self, CONFIGURATOR, PARENT_NODE, SCALE=3.0):
         self.gui_resource = avango.gua.gui.nodes.GuiResourceNode(
             Size=avango.gua.Vec2(320, 400),
             URL="asset://gua/data/html/compression_info.html",
@@ -26,7 +26,7 @@ class CompressionGui(avango.script.Script):
         self.node.Width.value = int(self.gui_resource.Size.value[0]*SCALE)
         self.node.Height.value = int(self.gui_resource.Size.value[1]*SCALE)     
         #self.node.Anchor.value = avango.gua.Vec2(-0.75, 0.5)
-        self.node.Anchor.value = avango.gua.Vec2(1.0, -1.0)
+        self.node.Anchor.value = avango.gua.Vec2(-0.75, -1.0)
 
         PARENT_NODE.Children.value.append(self.node)
 
