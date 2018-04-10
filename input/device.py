@@ -4,6 +4,83 @@ import math
 
 from avango.script import field_has_changed
 
+class Move(avango.script.Script) :
+    SensorX = avango.SFFloat()
+    SensorY = avango.SFFloat()
+    SensorZ = avango.SFFloat()
+    SensorRotY = avango.SFFloat()
+    MatrixOut = avango.gua.SFMatrix4()
+
+    def __init__(self):
+        self.super(Move).__init__()
+        self.SensorX.value = 0.0
+        self.SensorY.value = 0.0
+        self.SensorZ.value = 0.0
+        self.SensorRotY.value = 0.0
+        self.MatrixOut.value = avango.gua.make_identity_mat()
+        self.always_evaluate(True)
+
+    def evaluate(self):
+        #values = self.get_values()
+        trans_x = self.SensorX.value
+        trans_y = self.SensorY.value
+        trans_z = self.SensorZ.value
+        trans_x /= 2000.0
+        trans_y /= 2000.0
+        trans_z /= 2000.0
+        trans_matrix = avango.gua.make_trans_mat(
+            trans_x, 
+            trans_y, 
+            trans_z
+        )
+        self.MatrixOut.value = self.MatrixOut.value * trans_matrix
+
+class Rotate(avango.script.Script) :
+    SensorRotY = avango.SFFloat()
+    MatrixOut = avango.gua.SFMatrix4()
+
+    def __init__(self):
+        self.super(Rotate).__init__()
+        self.SensorRotY.value = 0.0
+        self.MatrixOut.value = avango.gua.make_identity_mat()
+        self.always_evaluate(True)
+
+    def evaluate(self):
+        #values = self.get_values()
+        rot_y = self.SensorRotY.value
+        rot_y /= 100.0
+        rot_matrix =  avango.gua.make_rot_mat(rot_y, 0, 1, 0) 
+        self.MatrixOut.value = self.MatrixOut.value * rot_matrix
+
+class SpaceMouseMove(Move):
+    def __init__(self):
+        self.super(SpaceMouseMove).__init__()
+
+        self.device_sensor = avango.daemon.nodes.DeviceSensor(
+            DeviceService=avango.daemon.DeviceService())
+        self.device_sensor.Station.value = "gua-device-spacemouse"
+
+        # manipulate the position of the sphere
+        self.SensorX.connect_from(self.device_sensor.Value0)
+        #self.SensorY.connect_from(self.device_sensor.Value1)
+        self.SensorZ.connect_from(self.device_sensor.Value2)
+        self.SensorRotY.connect_from(self.device_sensor.Value4)
+
+        self.always_evaluate(True)
+
+class SpaceMouseRotate(Rotate):
+    def __init__(self):
+        self.super(SpaceMouseRotate).__init__()
+
+        self.device_sensor = avango.daemon.nodes.DeviceSensor(
+            DeviceService=avango.daemon.DeviceService())
+        self.device_sensor.Station.value = "gua-device-spacemouse"
+
+        # manipulate the position of the sphere
+        self.SensorRotY.connect_from(self.device_sensor.Value4)
+
+        self.always_evaluate(True)
+
 class TouchCursor(avango.script.Script):
 
     CursorID = avango.SFInt()

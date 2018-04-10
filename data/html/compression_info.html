@@ -31,7 +31,7 @@
     text-align: right;
   }
   */
-  #grid, #point, #color, #point_size {
+  .property-div {
     width: 320px;
     height: 60px;
     padding: 10px;
@@ -40,9 +40,16 @@
     text-align: center;
     font-size: 150%;
   }
-  #grid_x, #grid_y, #grid_z, #point_x, #point_y, #point_z, #color_x, #color_y, #color_z, #point_size_value {
+  
+  .property-div > div {
     display: inline;
   }
+
+  h3 {
+    text-align: center;
+    margin: 0px;
+  }
+
   .data-table {
     width: 320px;
   }
@@ -50,6 +57,10 @@
   .data-table-row-odd {
     background: #F2F2F2;
     border-top: 1px solid black;
+  }
+
+  #rgbd {
+    display: none;
   }
 </style>
 
@@ -84,6 +95,40 @@ function set_color_prec(x,y,z) {
 function set_point_size(v) {
   div_v = document.getElementById('point_size_value');
   div_v.innerText = v;
+}
+
+function set_global_comp(v) {
+  div_v = document.getElementById('global_comp');
+  div_v.innerText = v;
+}
+
+function set_color_comp(v) {
+  div_v = document.getElementById('color_comp');
+  div_v.innerText = v;
+}
+
+function set_depth_comp(v) {
+  div_v = document.getElementById('depth_comp');
+  div_v.innerText = v;
+}
+
+function set_libpcc_visible(state) {
+  var x = document.getElementById("libpcc");
+  set_visible(x, state);
+}
+
+function set_rgbd_visible(state) {
+  var x = document.getElementById("rgbd");
+  set_visible(x, state);
+}
+
+function set_visible(x, state) {
+  if(state === "False") {
+    x.style.display = "none";
+  } else {
+      x.style.display = "block";
+  }
+  update_table_container("{}")
 }
 
 function update_table_container(data) {
@@ -143,18 +188,35 @@ function create_table_from_data(data) {
 </script>
 
 <body>
-  <div id="grid">
-    Grid Dimensions: [<div id="grid_x"></div>, <div id="grid_y"></div>, <div id="grid_z"></div>]
+  <div id="libpcc">
+    <h3><i>libpcc</i> Compression</h3>
+    <div class="property-div">
+      Grid Dimensions: [<div id="grid_x"></div>, <div id="grid_y"></div>, <div id="grid_z"></div>]
+    </div>
+    <div class="property-div">
+      Point Precision: [<div id="point_x"></div>, <div id="point_y"></div>, <div id="point_z"></div>] 
+    </div>
+    <div class="property-div">
+      Color Precision: [<div id="color_x"></div>, <div id="color_y"></div>, <div id="color_z"></div>]
+    </div>
+    <div class="property-div">
+      Point Size: <div id="point_size_value"></div>
+    </div>
   </div>
-  <div id="point">
-    Point Precision: [<div id="point_x"></div>, <div id="point_y"></div>, <div id="point_z"></div>] 
+
+  <div id="rgbd">
+    <h3><i>RGBD</i> Compression</h3>
+    <div class="property-div">
+      Global Compression: <div id="global_comp"></div>
+    </div>
+    <div class="property-div">
+      Color Compression: <div id="color_comp"></div>
+    </div>
+    <div class="property-div">
+      Depth Compression: <div id="depth_comp"></div>
+    </div>
   </div>
-  <div id="color">
-    Color Precision: [<div id="color_x"></div>, <div id="color_y"></div>, <div id="color_z"></div>]
-  </div>
-  <div id="point_size">
-    Point Size: <div id="point_size_value"></div>
-  </div>
+
   <div id="table-container"></div>
 </body>
 

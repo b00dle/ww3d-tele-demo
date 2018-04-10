@@ -18,3 +18,12 @@ def set_color_precision(spoints_geode, prec):
 
 def set_point_size(spoints_geode, size):
     spoints_geode.ScreenSpacePointSize.value = size
+
+def set_global_comp_lvl(video3d_geode, val):
+    video3d_geode.GlobalCompressionLevel.value = val
+
+def set_depth_comp_lvl(video3d_geode, val):
+    video3d_geode.DepthCompressionLevel.value = val
+
+def set_color_comp_lvl(video3d_geode, val):
+    video3d_geode.ColorCompressionLevel.value = val

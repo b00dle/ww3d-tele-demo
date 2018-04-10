@@ -8,6 +8,7 @@ from avango.script import field_has_changed
    
 import app
 from viewing.ViewingSetup import StereoViewingSetup
+from input.device import SpaceMouseMove, SpaceMouseRotate
 
 def start():
     # setup scenegraph
@@ -31,7 +32,6 @@ def start():
 
     viewer.run()
     '''
-
     ## init viewing and interaction setups
     hostname = open('/etc/hostname', 'r').readline()
     hostname = hostname.strip(" \n")
@@ -40,40 +40,7 @@ def start():
 
     viewingSetup = None
 
-    if hostname == "orestes": # Mitsubishi 3D-TV workstation
-        _tracking_transmitter_offset = avango.gua.make_trans_mat(-0.98, -(0.58 + 0.975), 0.27 + 3.48) * avango.gua.make_rot_mat(90.0,0,1,0) # transformation into tracking coordinate system 
-
-        viewingSetup = StereoViewingSetup(
-            SCENEGRAPH = graph,
-            WINDOW_RESOLUTION = avango.gua.Vec2ui(1920, 1080),
-            SCREEN_DIMENSIONS = avango.gua.Vec2(1.445, 0.81),
-            LEFT_SCREEN_RESOLUTION = avango.gua.Vec2ui(1920, 1080),
-            RIGHT_SCREEN_RESOLUTION = avango.gua.Vec2ui(1920, 1080),
-            STEREO_FLAG = True,
-            STEREO_MODE = avango.gua.StereoMode.CHECKERBOARD,
-            HEADTRACKING_FLAG = True,
-            HEADTRACKING_STATION = "tracking-glasses-1", # wired 3D-TV glasses on Mitsubishi 3D-TV workstation
-            TRACKING_TRANSMITTER_OFFSET = _tracking_transmitter_offset,
-            )
-
-        '''
-        pointerInput = PointerInput()
-        pointerInput.init_art_pointer(
-            POINTER_DEVICE_STATION = "device-pointer-1", # August pointer
-            POINTER_TRACKING_STATION = "tracking-pointer-1", # August pointer
-            TRACKING_TRANSMITTER_OFFSET = _tracking_transmitter_offset,
-            KEYBOARD_STATION = "gua-device-keyboard",
-        )
-            
-        manipulationManager = ManipulationManager()
-        manipulationManager.my_constructor(
-            SCENEGRAPH = graph,
-            NAVIGATION_NODE = viewingSetup.navigation_node,
-            HEAD_NODE = viewingSetup.head_node,
-            POINTER_INPUT = pointerInput,
-            )
-        '''
-    elif hostname == "athena": # small powerwall workstation
+    if hostname == "athena": # small powerwall workstation
         _tracking_transmitter_offset = avango.gua.make_trans_mat(0.0,-1.42,1.6) # transformation into tracking coordinate system
 
         viewingSetup = StereoViewingSetup(
@@ -148,6 +115,18 @@ def start():
             LEFT_SCREEN_RESOLUTION = size,
             RIGHT_SCREEN_RESOLUTION = size
         )
+
+    move = SpaceMouseMove()
+    move.MatrixOut.value = app.AVATAR_PARENT.Transform.value 
+    app.AVATAR_PARENT.Transform.connect_from(move.MatrixOut)
+
+    spoints_rotate = SpaceMouseRotate()
+    spoints_rotate.MatrixOut.value = app.SPOINTS_AVATAR.Transform.value
+    app.SPOINTS_AVATAR.Transform.connect_from(spoints_rotate.MatrixOut) 
+    
+    video3d_rotate = SpaceMouseRotate()
+    video3d_rotate.MatrixOut.value = app.VIDEO3D_AVATAR.Transform.value
+    app.VIDEO3D_AVATAR.Transform.connect_from(video3d_rotate.MatrixOut)    
 
     print("SCENEGRAPH") 
     print_graph(graph.Root.value)
