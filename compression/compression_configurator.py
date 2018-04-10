@@ -263,7 +263,7 @@ class RgbdCompressionConfigurator(avango.script.Script):
   - (uniformly) reduce or increase color compression
   - [min, max] = [1, 8]
 - Press Left or Right 
-  - (uniformly) reduce or increase grid compression
+  - (uniformly) reduce or increase global compression
   - [min, max] = [1, 8]
 ##############################################################
         """
