@@ -84,10 +84,93 @@ def init_keyboard():
         device_list.append(keyboard)
         print("Keyboard " + str(i) + " started at:", name)
 
+## Initializes AR Track
+def init_art_tracking_wall():
+
+    # create instance of DTrack
+    _dtrack = avango.daemon.DTrack()
+    _dtrack.port = "5000" # ART port
+
+    _dtrack.stations[10] = avango.daemon.Station('tracking-glasses-1') # 3D-TV wired shutter glasses
+    _dtrack.stations[2] = avango.daemon.Station('tracking-glasses-2') # small powerwall polarization glasses
+
+    _dtrack.stations[1] = avango.daemon.Station('tracking-pointer-1') # AUGUST pointer
+    _dtrack.stations[18] = avango.daemon.Station('tracking-pointer-2') # Gyromouse
+   
+
+    device_list.append(_dtrack)
+    print("ART Tracking  @Powerwall started")
+
+def init_spacemouse():
+    
+    # search for new spacemouse (blue LED)
+    _string = get_event_string(1, "3Dconnexion SpaceNavigator for Notebooks")
+
+    if _string is None:
+        _string = get_event_string(1, "3Dconnexion SpaceNavigator")
+            
+    if _string is not None: # new spacemouse was found
+        _spacemouse = avango.daemon.HIDInput()
+        _spacemouse.station = avango.daemon.Station('gua-device-spacemouse') # create a station to propagate the input events
+        _spacemouse.device = _string
+        _spacemouse.timeout = '14' # better !
+        _spacemouse.norm_abs = 'True'
+
+        # map incoming spacemouse events to station values
+        _spacemouse.values[0] = "EV_REL::REL_X"   # trans X
+        _spacemouse.values[1] = "EV_REL::REL_Z"   # trans Y
+        _spacemouse.values[2] = "EV_REL::REL_Y"   # trans Z
+        _spacemouse.values[3] = "EV_REL::REL_RX"  # rotate X
+        _spacemouse.values[4] = "EV_REL::REL_RZ"  # rotate Y
+        _spacemouse.values[5] = "EV_REL::REL_RY"  # rotate Z
+
+        # buttons
+        _spacemouse.buttons[0] = "EV_KEY::BTN_0" # left button
+        _spacemouse.buttons[1] = "EV_KEY::BTN_1" # right button
+
+        device_list.append(_spacemouse)
+        print("New SpaceMouse started at:", _string)
+
+        return
+
+
+    print("SpaceMouse NOT found!")
+
+
+## Gets the event string of a given input device.
+# @param STRING_NUM Integer saying which device occurence should be returned.
+# @param DEVICE_NAME Name of the input device to find the event string for.
+def get_event_string(STRING_NUM, DEVICE_NAME):
+
+    # file containing all devices with additional information
+    _device_file = os.popen("cat /proc/bus/input/devices").read()
+    _device_file = _device_file.split("\n")
+    
+    DEVICE_NAME = '\"' + DEVICE_NAME + '\"'
+    
+    # lines in the file matching the device name
+    _indices = []
+
+    for _i, _line in enumerate(_device_file):
+        if DEVICE_NAME in _line:
+            _indices.append(_i)
+
+    # if no device was found or the number is too high, return an empty string
+    if len(_indices) == 0 or STRING_NUM > len(_indices):
+        return None
+
+    # else captue the event number X of one specific device and return /dev/input/eventX
+    else:
+        _event_string_start_index = _device_file[_indices[STRING_NUM-1]+4].find("event")
+                
+        return "/dev/input/" + _device_file[_indices[STRING_NUM-1]+4][_event_string_start_index:].split(" ")[0]
+    
 
 device_list = []
 
 init_mouse()
 init_keyboard()
+init_art_tracking_wall()
+init_spacemouse()
 
 avango.daemon.run(device_list)

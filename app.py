@@ -4,7 +4,7 @@ import avango.gua
 import avango.gua.gui
 import sys
 
-from compression.compression_configurator import CompressionConfigurator 
+from compression.compression_configurator import LibpccCompressionConfigurator, RgbdCompressionConfigurator 
 from compression.compression_text import CompressionText
 from compression.compression_gui import CompressionGui
 
@@ -12,16 +12,22 @@ from input.timed_rotate import TimedRotate
 
 SPOINTS_CONFIG = ""
 VIDEO3D_CONFIG = ""
-COMPRESSION_CONFIGURATOR = None
+LIBPCC_COMPRESSION_CONFIGURATOR = None
+RGBD_COMPRESSION_CONFIGURATOR = None
 COMPRESSION_GUI = CompressionGui()
+#KEYBOARD_DEVICE_NUM = 0
+KEYBOARD_DEVICE_NUM = 1
+AVATAR_PARENT = None
+SPOINTS_AVATAR = None
+VIDEO3D_AVATAR = None
 
 def _apply_gui_hack(GUI_PARENT):
     ''' helper for setup_gui. 
         if hack isn't applied gui setup somehow crashes app. '''
-    global COMPRESSION_CONFIGURATOR
+    global LIBPCC_COMPRESSION_CONFIGURATOR
     hack = CompressionText()
     hack.my_constructor(
-        CONFIGURATOR=COMPRESSION_CONFIGURATOR,
+        CONFIGURATOR=LIBPCC_COMPRESSION_CONFIGURATOR,
         PARENT_NODE=GUI_PARENT,
         SCALE=0.03
     )
@@ -32,61 +38,78 @@ def _apply_gui_hack(GUI_PARENT):
 def _setup_gui(GUI_PARENT):
     ''' helper function for setup_scene 
         to add gui components to scene. '''
-    global COMPRESSION_CONFIGURATOR
+    global LIBPCC_COMPRESSION_CONFIGURATOR
+    global RGBD_COMPRESSION_CONFIGURATOR
     global COMPRESSION_GUI
     _apply_gui_hack(GUI_PARENT)
-    COMPRESSION_GUI.my_constructor(COMPRESSION_CONFIGURATOR, GUI_PARENT)
+    COMPRESSION_GUI.my_constructor(
+        LIBPCC_CONFIGURATOR = LIBPCC_COMPRESSION_CONFIGURATOR, 
+        RGBD_CONFIGURATOR = RGBD_COMPRESSION_CONFIGURATOR, 
+        PARENT_NODE = GUI_PARENT
+    )
+    COMPRESSION_GUI.Keyboard.set_device_number(KEYBOARD_DEVICE_NUM)
     
 def _setup_spoints(SPOINTS_PARENT):
     ''' helper function for setup_scene 
         to add spoints components to scene. '''
     global SPOINTS_CONFIG
-    global COMPRESSION_CONFIGURATOR
-    
+    global LIBPCC_COMPRESSION_CONFIGURATOR
+    global KEYBOARD_DEVICE_NUM
+    global SPOINTS_AVATAR
+
     spointsloader = avango.gua.nodes.SPointsLoader()
     spoints_geode = spointsloader.load("kinect-spoints", SPOINTS_CONFIG)
+    
+    LIBPCC_COMPRESSION_CONFIGURATOR = LibpccCompressionConfigurator()
+    LIBPCC_COMPRESSION_CONFIGURATOR.Keyboard.set_device_number(KEYBOARD_DEVICE_NUM)
+    LIBPCC_COMPRESSION_CONFIGURATOR.set_spoints_geode(spoints_geode)
+    LIBPCC_COMPRESSION_CONFIGURATOR.verbose = False
+    print(LIBPCC_COMPRESSION_CONFIGURATOR.get_usage_hint())
 
-    COMPRESSION_CONFIGURATOR = CompressionConfigurator()
-    COMPRESSION_CONFIGURATOR.Keyboard.set_device_number(1)
-    #COMPRESSION_CONFIGURATOR.Keyboard.set_device_number(0)
-    COMPRESSION_CONFIGURATOR.set_spoints_geode(spoints_geode)
-    COMPRESSION_CONFIGURATOR.verbose = False
-    print(COMPRESSION_CONFIGURATOR.get_usage_hint())
-
-    spoints_transform = avango.gua.nodes.TransformNode(
+    SPOINTS_AVATAR = avango.gua.nodes.TransformNode(
         Name="spoints-transform",
         Children=[spoints_geode]
     )
-    spoints_transform.Transform.value = \
-        avango.gua.make_trans_mat(0.75, -1.0, -2.0) * \
+    SPOINTS_AVATAR.Transform.value = \
+        avango.gua.make_trans_mat(0.75, -1.0, 0.0) * \
         avango.gua.make_rot_mat(180, 0.0, 1.0, 0.0)
-    
-    SPOINTS_PARENT.Children.value.append(spoints_transform)
+
+    SPOINTS_PARENT.Children.value.append(SPOINTS_AVATAR)
 
 def _setup_video3d(VIDEO3D_PARENT):
     ''' helper function for setup_scene 
         to add video3d components to scene. '''
     global VIDEO3D_CONFIG
+    global RGBD_COMPRESSION_CONFIGURATOR
+    global KEYBOARD_DEVICE_NUM
+    global VIDEO3D_AVATAR
 
     videoloader = avango.gua.nodes.Video3DLoader()
-    video_geode = videoloader.load("kinect-video3d", VIDEO3D_CONFIG)
+    video3d_geode = videoloader.load("kinect-video3d", VIDEO3D_CONFIG)
 
-    
-    video_transform = avango.gua.nodes.TransformNode(
+    RGBD_COMPRESSION_CONFIGURATOR = RgbdCompressionConfigurator()
+    RGBD_COMPRESSION_CONFIGURATOR.Keyboard.set_device_number(KEYBOARD_DEVICE_NUM)
+    RGBD_COMPRESSION_CONFIGURATOR.set_video3d_geode(video3d_geode)
+    RGBD_COMPRESSION_CONFIGURATOR.verbose = False
+    print(RGBD_COMPRESSION_CONFIGURATOR.get_usage_hint())
+    RGBD_COMPRESSION_CONFIGURATOR.set_enabled(False)
+
+    VIDEO3D_AVATAR = avango.gua.nodes.TransformNode(
         Name="video3d-transform",
-        Children=[video_geode]
+        Children=[video3d_geode]
     )
-    video_transform.Transform.value = \
-        avango.gua.make_trans_mat(-0.75, -1.0, -2.0) * \
+    VIDEO3D_AVATAR.Transform.value = \
+        avango.gua.make_trans_mat(-0.75, -1.0, 0.0) * \
         avango.gua.make_rot_mat(180, 0.0, 1.0, 0.0)
     
-    VIDEO3D_PARENT.Children.value.append(video_transform)
+    VIDEO3D_PARENT.Children.value.append(VIDEO3D_AVATAR)
 
 def setup_scene(graph):
     ''' helper function to setup scene graph '''
     global SPOINTS_CONFIG
     global VIDEO3D_CONFIG
     global COMPRESSION_GUI
+    global AVATAR_PARENT
 
     if len(SPOINTS_CONFIG) == 0:
         print("Failure: please initialize app.SPOINTS_CONFIG.")
@@ -97,8 +120,12 @@ def setup_scene(graph):
         print("  > Exiting.")
         sys.exit() 
 
-    _setup_video3d(graph.Root.value)
-    _setup_spoints(graph.Root.value)
+    AVATAR_PARENT = avango.gua.nodes.TransformNode(Name="avatar-parent")
+    AVATAR_PARENT.Transform.value = avango.gua.make_trans_mat(0,0,-2)
+    graph.Root.value.Children.value.append(AVATAR_PARENT)
+
+    _setup_spoints(AVATAR_PARENT)
+    _setup_video3d(AVATAR_PARENT)
     _setup_gui(graph.Root.value)
 
     #COMPRESSION_GUI.hide()

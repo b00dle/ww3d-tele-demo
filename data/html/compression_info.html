@@ -31,26 +31,61 @@
     text-align: right;
   }
   */
-  #grid, #point, #color {
+  
+  .property-div {
     width: 320px;
-    height: 60px;
-    padding: 10px;
-    border: 5px solid gray;
+    border: 1px solid #939292;
     margin: 0;
     text-align: center;
-    font-size: 150%;
+    font-size: 120%;
+    background: #454545;
+    color: white;
   }
-  #grid_x, #grid_y, #grid_z, #point_x, #point_y, #point_z, #color_x, #color_y, #color_z {
+  
+  .property-div > div {
     display: inline;
   }
+
+  h2, h3 {
+    text-align: center;
+    margin: 0px;
+    background: #939292;
+    color: white;
+  }
+
   .data-table {
     width: 320px;
+    border: 1px solid #939292;
   }
 
   .data-table-row-odd {
-    background: #F2F2F2;
-    border-top: 1px solid black;
+    background: #454545;
+    color: white;
   }
+
+  .data-table-row-even {
+    background: #939292;
+    color: white;
+  }
+
+  #rgbd {
+    display: none;
+  }
+
+  #hint {
+    width: 320px;
+    height: 30px;
+    margin: 0;
+    text-align: center;
+    background: #939292;
+    color: white;
+  }
+
+  body {
+    background: #939292;
+    color: white;
+  }
+
 </style>
 
 <script type="text/javascript">
@@ -79,6 +114,45 @@ function set_color_prec(x,y,z) {
   div_y.innerText = y;
   div_z = document.getElementById('color_z');
   div_z.innerText = z;
+}
+
+function set_point_size(v) {
+  div_v = document.getElementById('point_size_value');
+  div_v.innerText = v;
+}
+
+function set_global_comp(v) {
+  div_v = document.getElementById('global_comp');
+  div_v.innerText = v;
+}
+
+function set_color_comp(v) {
+  div_v = document.getElementById('color_comp');
+  div_v.innerText = v;
+}
+
+function set_depth_comp(v) {
+  div_v = document.getElementById('depth_comp');
+  div_v.innerText = v;
+}
+
+function set_libpcc_visible(state) {
+  var x = document.getElementById("libpcc");
+  set_visible(x, state);
+}
+
+function set_rgbd_visible(state) {
+  var x = document.getElementById("rgbd");
+  set_visible(x, state);
+}
+
+function set_visible(x, state) {
+  if(state === "False") {
+    x.style.display = "none";
+  } else {
+      x.style.display = "block";
+  }
+  update_table_container("{}")
 }
 
 function update_table_container(data) {
@@ -138,15 +212,44 @@ function create_table_from_data(data) {
 </script>
 
 <body>
-  <div id="grid">
-    Grid Dimensions [<div id="grid_x"></div>, <div id="grid_y"></div>, <div id="grid_z"></div>]
+  <div id="libpcc">
+    <h2><i>libpcc</i> Compression</h2>
+    <div id="hint">
+      Switch (1), Hide (2)
+    </div>
+    <h3>Settings</h3>
+    <div class="property-div">
+      Grid Dimensions (&larr;,&rarr;): [<div id="grid_x"></div>, <div id="grid_y"></div>, <div id="grid_z"></div>]
+    </div>
+    <div class="property-div">
+      Point Precision (A,D): [<div id="point_x"></div>, <div id="point_y"></div>, <div id="point_z"></div>] 
+    </div>
+    <div class="property-div">
+      Color Precision (S,W): [<div id="color_x"></div>, <div id="color_y"></div>, <div id="color_z"></div>]
+    </div>
+    <div class="property-div">
+      Point Size (O,P): <div id="point_size_value"></div>
+    </div>
   </div>
-  <div id="point">
-    Point Precision [<div id="point_x"></div>, <div id="point_y"></div>, <div id="point_z"></div>] 
+
+  <div id="rgbd">
+    <h2><i>rgbd</i> Compression</h2>
+    <div id="hint">
+      Switch (1), Hide (2)
+    </div>
+    <h3>Settings</h3>
+    <div class="property-div">
+      Global Compression (&larr;,&rarr;): <div id="global_comp"></div>
+    </div>
+    <div class="property-div">
+      Color Compression (S,W): <div id="color_comp"></div>
+    </div>
+    <div class="property-div">
+      Depth Compression (A,D): <div id="depth_comp"></div>
+    </div>
   </div>
-  <div id="color">
-    Color Precision [<div id="color_x"></div>, <div id="color_y"></div>, <div id="color_z"></div>]
-  </div>
+  </br>
+  <h3>Stats</h3>
   <div id="table-container"></div>
 </body>
 
