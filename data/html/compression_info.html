@@ -68,6 +68,10 @@
     color: white;
   }
 
+  .col-2 {
+    text-align: left;
+  }
+
   #rgbd {
     display: none;
   }
@@ -196,7 +200,7 @@ function create_table_from_data(data) {
     
     // second col
     var c2 = document.createElement("td");
-    c2.classList.add("col");
+    c2.classList.add("col-2");
     c2.innerHTML = data[key];
     
     // add to elements

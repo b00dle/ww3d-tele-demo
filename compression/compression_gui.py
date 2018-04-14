@@ -18,7 +18,7 @@ class CompressionGui(avango.script.Script):
     def __init__(self):
         self.super(CompressionGui).__init__()
 
-    def my_constructor(self, LIBPCC_CONFIGURATOR, RGBD_CONFIGURATOR, PARENT_NODE, SCALE=2.0):
+    def my_constructor(self, LIBPCC_CONFIGURATOR, RGBD_CONFIGURATOR, PARENT_NODE, SCALE=1.0):
         self.gui_resource = avango.gua.gui.nodes.GuiResourceNode(
             Size=avango.gua.Vec2(320, 500),
             URL="asset://gua/data/html/compression_info.html",
@@ -28,10 +28,10 @@ class CompressionGui(avango.script.Script):
         self.node = avango.gua.nodes.TexturedScreenSpaceQuadNode()
         self.node.Name.value = "gui-geometry"
         self.node.Texture.value = self.gui_resource.TextureName.value
-        self.node.Width.value = int(self.gui_resource.Size.value[0]*SCALE*1.5)
+        self.node.Width.value = int(self.gui_resource.Size.value[0]*SCALE)
         self.node.Height.value = int(self.gui_resource.Size.value[1]*SCALE)     
-        #self.node.Anchor.value = avango.gua.Vec2(-0.75, 0.5)
-        self.node.Anchor.value = avango.gua.Vec2(-0.8, -0.5)
+        self.node.Anchor.value = avango.gua.Vec2(-0.75, 0.5)
+        #self.node.Anchor.value = avango.gua.Vec2(-0.8, -0.5)
 
         PARENT_NODE.Children.value.append(self.node)
 

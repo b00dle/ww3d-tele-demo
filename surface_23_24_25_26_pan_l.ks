@@ -1,4 +1,4 @@
-serverport 141.54.147.57:7000
+serverport 141.54.147.29:7000
 kinect /mnt/telepresence/kinect_recordings/christmas2017/23.yml
 kinect /mnt/telepresence/kinect_recordings/christmas2017/24.yml
 kinect /mnt/telepresence/kinect_recordings/christmas2017/25.yml

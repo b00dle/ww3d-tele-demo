@@ -105,7 +105,28 @@ def start():
             HEAD_NODE = viewingSetup.head_node,
             POINTER_INPUT = pointerInput,
             )
-        '''            
+        '''
+    elif hostname == "achill": # high res powerwall B11
+        viewingSetup = StereoViewingSetup(
+            SCENEGRAPH = graph,
+            WINDOW_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
+            SCREEN_DIMENSIONS = avango.gua.Vec2(4.45, 2.73),
+            LEFT_SCREEN_POSITION = avango.gua.Vec2ui(0, 0),
+            RIGHT_SCREEN_POSITION = avango.gua.Vec2ui(3840, 0),
+            LEFT_SCREEN_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
+            RIGHT_SCREEN_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
+            STEREO_FLAG = True,
+            STEREO_MODE = avango.gua.StereoMode.SIDE_BY_SIDE,
+            TRACKING_TRANSMITTER_OFFSET = avango.gua.make_trans_mat(0.0,-1.57,1.6),
+            HEADTRACKING_FLAG = True,
+            HEADTRACKING_STATION = "tracking-dlp-glasses-3"
+        )
+
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-2")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-1")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-3")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-4")
+
     else:
         size = avango.gua.Vec2ui(1024, 768)
         viewingSetup = StereoViewingSetup(
