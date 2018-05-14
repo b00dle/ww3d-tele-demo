@@ -30,7 +30,7 @@ $ > ./rgbd_node_player -f <path-to-stream> -k 4 -s <play-server>:7050
 #### Start `<rgbd-server>`
 Use these commands to receive raw image streams from a `<play-server>` and start an `<rgbd-server>`, which is responsible for compressing received raw image streams and forwarding them to a `<client>`:
 ```
-$ > ./rgbd_compression_node -f <path-to-stream> -k 4 -b <calib-files> -m -2.0 0.0 -1.0 2.5 1.9 1.0 -q 0.02 -a 10 -r 2 -s 
+$ > ./rgbd_compression_node -k 4 -b <calib-files> -m -2.0 0.0 -1.0 2.5 1.9 1.0 -q 0.02 -a 10 -r 2 -s 
 $ > <rgbd-server>:7000 -c <client>:7001 -p <play-server>:7050 -d <client>:7051
 ```
 `<path-to-stream>` is expected as a cmd argument but will not be used at program execution. Yet, it might help to identify the `<calib-files>` listed after the *-b* tag. Some sample values for these parameters would be:
@@ -57,6 +57,9 @@ $ > ./remote_rendering_server <surface-config>.ks -u <pcc-server>:7060 -d 1920 1
 , where `<surface-config>.ks` provides the surface file denoting calibration of the raw image streams. The contents of this file should look something like this:
 ```
 serverport <play-server>:7050
+feedbackport <client>:7001
+debugport <play-server>:7051
+debugport <>
 kinect 23.yml
 kinect 24.yml
 kinect 25.yml
@@ -71,6 +74,8 @@ If all of the above server instances are running, you should be good to start th
 - surface_23_24_25_26_pan_l.ks
 ```
 serverport <rgbd-server>:7000
+feedbackport <rgbd-client>:7001
+debugport <rgbd-server>:7051
 kinect <path-to>/23.yml
 kinect <path-to>/24.yml
 kinect <path-to>/25.yml
@@ -78,7 +83,7 @@ kinect <path-to>/26.yml
 bbx -1 0.05 -1 1.0 2.2 1.0
 normal 0 0 0
 ```
-, where `<rgbd-server>` denotes the IP of the machine hosting image compression and all .yml files should reflect whichever calibration files are necessary for the image streams your avatars are based on.  
+, where `<rgbd-server>` denotes the IP of the machine hosting image compression, <rgbd-client> denotes IP of the machine running the image client and all .yml files should reflect whichever calibration files are necessary for the image streams your avatars are based on.  
 - points_resource_file.sr:
 ```
 serversocket <pcc-server>:7060
