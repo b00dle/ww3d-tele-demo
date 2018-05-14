@@ -1,4 +1,6 @@
 serverport 141.54.147.47:7000
+feedbackport 141.54.147.47:7001
+debugport 141.54.147.47:7051
 kinect /mnt/telepresence/kinect_recordings/final_presentation/23.yml
 kinect /mnt/telepresence/kinect_recordings/final_presentation/24.yml
 kinect /mnt/telepresence/kinect_recordings/final_presentation/25.yml
