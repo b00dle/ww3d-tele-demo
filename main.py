@@ -8,6 +8,7 @@ from avango.script import field_has_changed
    
 import app
 from viewing.ViewingSetup import StereoViewingSetup
+from viewing.MultiUserViewingSetup import MultiUserViewingSetup
 from input.device import SpaceMouseMove, SpaceMouseRotate
 
 def start():
@@ -105,7 +106,53 @@ def start():
             HEAD_NODE = viewingSetup.head_node,
             POINTER_INPUT = pointerInput,
             )
-        '''            
+        '''
+    elif hostname == "achill": # high res powerwall B11
+        '''
+        viewingSetup = StereoViewingSetup(
+            SCENEGRAPH = graph,
+            WINDOW_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
+            SCREEN_DIMENSIONS = avango.gua.Vec2(4.45, 2.73),
+            LEFT_SCREEN_POSITION = avango.gua.Vec2ui(0, 0),
+            RIGHT_SCREEN_POSITION = avango.gua.Vec2ui(3840, 0),
+            LEFT_SCREEN_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
+            RIGHT_SCREEN_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
+            STEREO_FLAG = True,
+            STEREO_MODE = avango.gua.StereoMode.SIDE_BY_SIDE,
+            TRACKING_TRANSMITTER_OFFSET = avango.gua.make_trans_mat(0.0,-1.57,1.6),
+            HEADTRACKING_FLAG = True,
+            HEADTRACKING_STATION = "tracking-dlp-glasses-3"
+        )
+
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-2")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-1")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-3")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-4")
+        '''
+
+        viewingSetup = MultiUserViewingSetup(
+            SCENEGRAPH = graph,
+            WINDOW_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
+            SCREEN_DIMENSIONS = avango.gua.Vec2(4.83, 2.71),
+            LEFT_POSITION = avango.gua.Vec2ui(0, 0),
+            RIGHT_POSITION = avango.gua.Vec2ui(3840, 0),
+            LEFT_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
+            RIGHT_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
+            TRACKING_TRANSMITTER_OFFSET = avango.gua.make_trans_mat(0.0,-1.57,1.6),
+            #DISPLAY_STRING_LIST = [":0.0", ":0.1", ":0.2", ":0.3"], # number of available GPUs (users)
+            #DISPLAY_STRING_LIST = [":0.2"], # for glasses-C
+            DISPLAY_STRING_LIST = [":0.0"], # for glasses-C
+        )
+
+        ## multi user
+        viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "glasses-B")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "glasses-A")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "glasses-C")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "glasses-D")
+        
+        ## one user
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "glasses-C")
+        
     else:
         size = avango.gua.Vec2ui(1024, 768)
         viewingSetup = StereoViewingSetup(
@@ -116,17 +163,20 @@ def start():
             RIGHT_SCREEN_RESOLUTION = size
         )
 
-    move = SpaceMouseMove()
-    move.MatrixOut.value = app.AVATAR_PARENT.Transform.value 
-    app.AVATAR_PARENT.Transform.connect_from(move.MatrixOut)
+    if app.AVATAR_PARENT is not None:
+        move = SpaceMouseMove()
+        move.MatrixOut.value = app.AVATAR_PARENT.Transform.value 
+        app.AVATAR_PARENT.Transform.connect_from(move.MatrixOut)
 
-    spoints_rotate = SpaceMouseRotate()
-    spoints_rotate.MatrixOut.value = app.SPOINTS_AVATAR.Transform.value
-    app.SPOINTS_AVATAR.Transform.connect_from(spoints_rotate.MatrixOut) 
+    if app.SPOINTS_AVATAR is not None:
+        spoints_rotate = SpaceMouseRotate()
+        spoints_rotate.MatrixOut.value = app.SPOINTS_AVATAR.Transform.value
+        app.SPOINTS_AVATAR.Transform.connect_from(spoints_rotate.MatrixOut) 
     
-    video3d_rotate = SpaceMouseRotate()
-    video3d_rotate.MatrixOut.value = app.VIDEO3D_AVATAR.Transform.value
-    app.VIDEO3D_AVATAR.Transform.connect_from(video3d_rotate.MatrixOut)    
+    if app.VIDEO3D_AVATAR is not None:
+        video3d_rotate = SpaceMouseRotate()
+        video3d_rotate.MatrixOut.value = app.VIDEO3D_AVATAR.Transform.value
+        app.VIDEO3D_AVATAR.Transform.connect_from(video3d_rotate.MatrixOut)    
 
     print("SCENEGRAPH") 
     print_graph(graph.Root.value)

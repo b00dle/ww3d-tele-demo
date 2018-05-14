@@ -28,20 +28,22 @@ class CompressionGui(avango.script.Script):
         self.node = avango.gua.nodes.TexturedScreenSpaceQuadNode()
         self.node.Name.value = "gui-geometry"
         self.node.Texture.value = self.gui_resource.TextureName.value
-        self.node.Width.value = int(self.gui_resource.Size.value[0]*SCALE*1.5)
+        self.node.Width.value = int(self.gui_resource.Size.value[0]*SCALE)
         self.node.Height.value = int(self.gui_resource.Size.value[1]*SCALE)     
-        #self.node.Anchor.value = avango.gua.Vec2(-0.75, 0.5)
-        self.node.Anchor.value = avango.gua.Vec2(-0.8, -0.5)
+        self.node.Anchor.value = avango.gua.Vec2(-0.85, -0.9)
+        #self.node.Anchor.value = avango.gua.Vec2(-0.8, -0.5)
 
         PARENT_NODE.Children.value.append(self.node)
 
         self.libpcc_configurator = LIBPCC_CONFIGURATOR
-        self.libpcc_configurator.set_enabled(True)
-        self.UpdateText.connect_from(self.libpcc_configurator.Updated)
+        if self.libpcc_configurator is not None:
+            self.libpcc_configurator.set_enabled(True)
+            self.UpdateText.connect_from(self.libpcc_configurator.Updated)
 
         self.rgbd_configurator = RGBD_CONFIGURATOR
-        self.rgbd_configurator.set_enabled(False)
-        self.UpdateText.connect_from(self.rgbd_configurator.Updated)
+        if self.rgbd_configurator is not None:
+            self.rgbd_configurator.set_enabled(False)
+            self.UpdateText.connect_from(self.rgbd_configurator.Updated)
 
         self._have_toggled_gui = False
         self.ToggleGui.value = False
@@ -75,7 +77,7 @@ class CompressionGui(avango.script.Script):
                     self.gui_resource.call_javascript("set_point_size", [str(value)])
                 else:
                     continue
-        elif self.rgbd_configurator.is_enabled():
+        elif self.rgbd_configurator is not None and self.rgbd_configurator.is_enabled():
             for key, value in self.rgbd_configurator.get_settings().items():
                 if key == "global_comp_lvl":
                     self.gui_resource.call_javascript("set_global_comp", [str(value)])
@@ -93,12 +95,14 @@ class CompressionGui(avango.script.Script):
             return
         elif self._have_toggled_gui:
             return
-        libpcc_enabled = not self.libpcc_configurator.is_enabled()
-        rgbd_enabled = not self.rgbd_configurator.is_enabled()
-        self.libpcc_configurator.set_enabled(libpcc_enabled)
-        self.rgbd_configurator.set_enabled(rgbd_enabled)
-        self.gui_resource.call_javascript("set_libpcc_visible", [str(libpcc_enabled)])
-        self.gui_resource.call_javascript("set_rgbd_visible", [str(rgbd_enabled)])
+        if self.libpcc_configurator is not None:
+            libpcc_enabled = not self.libpcc_configurator.is_enabled()
+            self.libpcc_configurator.set_enabled(libpcc_enabled)
+            self.gui_resource.call_javascript("set_libpcc_visible", [str(libpcc_enabled)])
+        if self.rgbd_configurator is not None:
+            rgbd_enabled = not self.rgbd_configurator.is_enabled()
+            self.rgbd_configurator.set_enabled(rgbd_enabled)
+            self.gui_resource.call_javascript("set_rgbd_visible", [str(rgbd_enabled)])
         self._have_toggled_gui = True
 
     @field_has_changed(ToggleVisible)
@@ -120,7 +124,7 @@ class CompressionGui(avango.script.Script):
 
     def _update_appendix(self):
         appendix_data = ""
-        if self.libpcc_configurator.is_enabled():
+        if self.libpcc_configurator is not None and self.libpcc_configurator.is_enabled():
             if self.libpcc_configurator.spoints_geode:
                 try:
                     appendix_data = self.libpcc_configurator.spoints_geode.MsgAppendix.value
@@ -142,7 +146,7 @@ class CompressionGui(avango.script.Script):
                     print("Error parsing grid message appendix:\n", e)
                     print("  > could not retrieve appendix data")
                     appendix_data = ""
-        else:
+        elif self.rgbd_configurator is not None and self.rgbd_configurator.is_enabled():
             if self.rgbd_configurator.video3d_geode is not None:
                 try:
                     appendix_data = self.rgbd_configurator.video3d_geode.DebugMessage.value
