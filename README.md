@@ -9,7 +9,7 @@ This codebase heavily relies on multiple dependencies maintained by vrsys group,
 
 This demo will not present any meaningful output unless the respective compression server instances are running. The following sections will explain in detail how to configure each of these.
 
-### RGBD Calib (Montag55) <rgbd-server> / <play-server>
+### RGBD Calib (Montag55) `<rgbd-server> / <play-server>`
 
 This project is used as the server for image based compression (`<rgbd-server>`), but also provides an interface to produce raw image streams (`<play-server>`).
 ```
@@ -19,7 +19,7 @@ $ > ccmake ..
 $ > make install
 ```
 
-#### Start <play-server>
+#### Start `<play-server>`
 Use these commands to start playback of raw image streams:
 ```
 $ > cd rgbd-calib/install/bin
@@ -27,7 +27,7 @@ $ > ./rgbd_node_player -f <path-to-stream> -k 4 -s <play-server>:7050
 ```
 , where `<path-to-stream>` should hold the path to a valid .stream file (e.g. `/mnt/telepresence/kinect_recordings/christmas2017/stream_02.stream`) and `<play-server>` is the IP adress of the machine used to run the playback of raw image streams. 
 
-#### Start <rgbd-server>
+#### Start `<rgbd-server>`
 Use these commands to receive raw image streams from a `<play-server>` and start an `<rgbd-server>`, which is responsible for compressing received raw image streams and forwarding them to a `<client>`:
 ```
 $ > ./rgbd_compression_node -f <path-to-stream> -k 4 -b <calib-files> -m -2.0 0.0 -1.0 2.5 1.9 1.0 -q 0.02 -a 10 -r 2 -s 
@@ -39,7 +39,7 @@ $ > <rgbd-server>:7000 -c <client>:7001 -p <play-server>:7050 -d <client>:7051
 
 For `<rgbd-server>` insert the IP address of the network interface which should host the image based compression service. For `<client>` insert the IP adress of the machine from which configuration feedback is to be expected. Most likely this is the machine running this demo. `<play-server>` will again have to conatin the IP of the playback server sending raw image data.
 
-### RGBD Recon (b00dle) <pcc-server>
+### RGBD Recon (b00dle) `<pcc-server>`
 This project is used as the server for point cloud based compression (`<pcc-server>`).
 ```
 $ > git clone https://github.com/b00dle/rgbd-libpcc-recon.git
@@ -48,7 +48,7 @@ $ > ccmake ..
 $ > make install
 ```
 
-#### Start <pcc-server>
+#### Start `<pcc-server>`
 To trigger reconstruction of raw image streams, compression of the resulting point cloud, and forwarding the created data to a client, call:
 ```
 $ > cd rgbd-libpcc-recon/install/bin
@@ -66,7 +66,7 @@ normal 0 0 0
 ```
 Here `<play-server>` again refers to the server sending raw image data over the network. `<pcc-server>` should reflect the IP of the machine hosting the point cloud compression server. As in the call instanciating the image based compression server, `<client>` refers to the IP of a client machine, which opens a port for sending feedback to the compression server. 
 
-### RUNNING THIS DEMO <client>
+### RUNNING THIS DEMO `<client>`
 If all of the above server instances are running, you should be good to start this demo. As a last step, ensure that avango and guacamole support both image compression inside video3d-plugin and point cloud compression using spoints-plugin. Also ensure that surface_23_24_25_26_pan_l.ks & spoints_resource_file.sr reflect your configuration:
 - surface_23_24_25_26_pan_l.ks
 ```
