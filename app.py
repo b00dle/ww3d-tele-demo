@@ -16,9 +16,9 @@ LIBPCC_COMPRESSION_CONFIGURATOR = None
 RGBD_COMPRESSION_CONFIGURATOR = None
 COMPRESSION_GUI = CompressionGui()
 #KEYBOARD_DEVICE_NUM = 0
-#KEYBOARD_DEVICE_NUM = 1
+KEYBOARD_DEVICE_NUM = 1
 #KEYBOARD_DEVICE_NUM = 2
-KEYBOARD_DEVICE_NUM = 3
+#KEYBOARD_DEVICE_NUM = 3
 AVATAR_PARENT = None
 SPOINTS_AVATAR = None
 VIDEO3D_AVATAR = None
@@ -73,7 +73,7 @@ def _setup_spoints(SPOINTS_PARENT):
         Children=[spoints_geode]
     )
     SPOINTS_AVATAR.Transform.value = \
-        avango.gua.make_trans_mat(0.75, -1.0, 0.0) * \
+        avango.gua.make_trans_mat(0.75, -1.57, 0.0) * \
         avango.gua.make_rot_mat(180, 0.0, 1.0, 0.0)
 
     SPOINTS_PARENT.Children.value.append(SPOINTS_AVATAR)
@@ -101,7 +101,7 @@ def _setup_video3d(VIDEO3D_PARENT):
         Children=[video3d_geode]
     )
     VIDEO3D_AVATAR.Transform.value = \
-        avango.gua.make_trans_mat(-0.75, -1.0, 0.0) * \
+        avango.gua.make_trans_mat(-0.75, -1.57, 0.0) * \
         avango.gua.make_rot_mat(180, 0.0, 1.0, 0.0)
     
     VIDEO3D_PARENT.Children.value.append(VIDEO3D_AVATAR)
@@ -126,6 +126,7 @@ def setup_scene(graph):
     AVATAR_PARENT.Transform.value = avango.gua.make_trans_mat(0,0,-2)
     graph.Root.value.Children.value.append(AVATAR_PARENT)
 
+    #print("joooo\n\njoooo\n\njoooo\n\njoooo\n\njoooo\n\njoooo\n\njoooo\n\n")
     _setup_spoints(AVATAR_PARENT)
     _setup_video3d(AVATAR_PARENT)
     _setup_gui(graph.Root.value)

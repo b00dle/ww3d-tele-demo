@@ -124,29 +124,28 @@ class CompressionGui(avango.script.Script):
 
     def _update_appendix(self):
         appendix_data = ""
-        if self.libpcc_configurator is not None:
-            if self.libpcc_configurator.is_enabled():
-                if self.libpcc_configurator.spoints_geode:
-                    try:
-                        appendix_data = self.libpcc_configurator.spoints_geode.MsgAppendix.value
-                        if appendix_data.startswith("{") and not appendix_data.endswith("}"):
-                            last_close = 0
-                            for i in reversed(range(0, len(appendix_data))):
-                                if appendix_data[i] == "}":
-                                    last_close = i
-                                    break
-                            if last_close == 0:
-                                appendix_data = ""
-                            else:
-                                appendix_data = appendix_data[0:last_close+1]
-                        if len(appendix_data) > 0:
-                            self.last_libpcc_appendix = appendix_data
+        if self.libpcc_configurator is not None and self.libpcc_configurator.is_enabled():
+            if self.libpcc_configurator.spoints_geode:
+                try:
+                    appendix_data = self.libpcc_configurator.spoints_geode.MsgAppendix.value
+                    if appendix_data.startswith("{") and not appendix_data.endswith("}"):
+                        last_close = 0
+                        for i in reversed(range(0, len(appendix_data))):
+                            if appendix_data[i] == "}":
+                                last_close = i
+                                break
+                        if last_close == 0:
+                            appendix_data = ""
                         else:
-                            appendix_data = self.last_libpcc_appendix
-                    except ValueError as e:
-                        print("Error parsing grid message appendix:\n", e)
-                        print("  > could not retrieve appendix data")
-                        appendix_data = ""
+                            appendix_data = appendix_data[0:last_close+1]
+                    if len(appendix_data) > 0:
+                        self.last_libpcc_appendix = appendix_data
+                    else:
+                        appendix_data = self.last_libpcc_appendix
+                except ValueError as e:
+                    print("Error parsing grid message appendix:\n", e)
+                    print("  > could not retrieve appendix data")
+                    appendix_data = ""
         elif self.rgbd_configurator is not None and self.rgbd_configurator.is_enabled():
             if self.rgbd_configurator.video3d_geode is not None:
                 try:

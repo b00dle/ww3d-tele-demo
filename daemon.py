@@ -101,6 +101,22 @@ def init_art_tracking_wall():
     device_list.append(_dtrack)
     print("ART Tracking  @Powerwall started")
 
+## Initializes AR Track
+def init_art_achill_wall():
+
+    # create instance of DTrack
+    _dtrack = avango.daemon.DTrack()
+    _dtrack.port = "5002" # ART port
+
+    _dtrack.stations[40] = avango.daemon.Station('glasses-A') 
+    _dtrack.stations[41] = avango.daemon.Station('glasses-B') 
+    _dtrack.stations[42] = avango.daemon.Station('glasses-C') 
+    _dtrack.stations[43] = avango.daemon.Station('glasses-D') 
+   
+
+    device_list.append(_dtrack)
+    print("ART Tracking  @Powerwall started")
+
 def init_spacemouse():
     
     # search for new spacemouse (blue LED)
@@ -171,6 +187,7 @@ device_list = []
 init_mouse()
 init_keyboard()
 init_art_tracking_wall()
+init_art_achill_wall()
 init_spacemouse()
 
 avango.daemon.run(device_list)

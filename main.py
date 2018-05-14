@@ -133,20 +133,26 @@ def start():
         viewingSetup = MultiUserViewingSetup(
             SCENEGRAPH = graph,
             WINDOW_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
-            SCREEN_DIMENSIONS = avango.gua.Vec2(4.45, 2.73),
+            SCREEN_DIMENSIONS = avango.gua.Vec2(4.83, 2.71),
             LEFT_POSITION = avango.gua.Vec2ui(0, 0),
             RIGHT_POSITION = avango.gua.Vec2ui(3840, 0),
             LEFT_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
             RIGHT_RESOLUTION = avango.gua.Vec2ui(3840, 2160),
             TRACKING_TRANSMITTER_OFFSET = avango.gua.make_trans_mat(0.0,-1.57,1.6),
-            DISPLAY_STRING_LIST = [":0.0", ":0.1", ":0.2", ":0.3"], # number of available GPUs (users)
+            #DISPLAY_STRING_LIST = [":0.0", ":0.1", ":0.2", ":0.3"], # number of available GPUs (users)
+            #DISPLAY_STRING_LIST = [":0.2"], # for glasses-C
+            DISPLAY_STRING_LIST = [":0.0"], # for glasses-C
         )
 
-        viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-2")
-        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-1")
-        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-3")
-        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "tracking-dlp-glasses-4")
-
+        ## multi user
+        viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "glasses-B")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "glasses-A")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "glasses-C")
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "glasses-D")
+        
+        ## one user
+        #viewingSetup.init_user(HEADTRACKING_SENSOR_STATION = "glasses-C")
+        
     else:
         size = avango.gua.Vec2ui(1024, 768)
         viewingSetup = StereoViewingSetup(
