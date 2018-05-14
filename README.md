@@ -33,8 +33,7 @@ Use these commands to receive raw image streams from a `<play-server>` and start
 $ > ./rgbd_compression_node -k 4 -b <calib-files> -m -2.0 0.0 -1.0 2.5 1.9 1.0 -q 0.02 -a 10 -r 2 -s
 $ > <rgbd-server>:7000 -c <rgbd-client>:7001 -p <play-server>:7050 -d <rgbd-client>:7051
 ```
-`<path-to-stream>` is expected as a cmd argument but will not be used at program execution. Yet, it might help to identify the `<calib-files>` listed after the *-b* tag. Some sample values for these parameters would be:
-- `<path-to-stream>` : /mnt/telepresence/kinect_recordings/christmas2017/stream_02.stream
+The `<calib-files>` lists all calibration files after the *-b* tag. Some sample values for this parameter would be:
 - `<calib-files>` : /mnt/telepresence/kinect_recordings/christmas2017/23.cv /mnt/telepresence/kinect_recordings/christmas2017/24.cv /mnt/telepresence/kinect_recordings/christmas2017/25.cv /mnt/telepresence/kinect_recordings/christmas2017/26.cv
 
 For `<rgbd-server>` insert the IP address of the network interface which should host the image based compression service. For `<rgbd-client>` insert the IP adress of the machine from which configuration feedback is to be expected. Most likely this is the machine running this demo. `<play-server>` will again have to conatin the IP of the playback server sending raw image data.
